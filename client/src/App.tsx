@@ -1,6 +1,7 @@
-import { Container, IconButton, InputBase, Paper, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
+import { Container, IconButton, InputBase, Paper, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { useState } from "react";
 import SendIcon from "@mui/icons-material/Send";
+import Room from "./components/Room";
 
 export default function App() {
   const [selectedRoom, setSelectedRoom] = useState("Room 1");
@@ -21,9 +22,7 @@ export default function App() {
         ))}
       </ToggleButtonGroup>
       <Paper className="p-4" variant="outlined">
-        <Paper className="h-96 mb-4 p-4" variant="outlined">
-          <Typography variant="body1">Hi</Typography>
-        </Paper>
+        <Room selectedRoom={selectedRoom} />
         <Paper className="flex px-4 py-2" component={"form"} variant="outlined">
           <InputBase className="w-full" placeholder="Type a message" />
           <IconButton>
