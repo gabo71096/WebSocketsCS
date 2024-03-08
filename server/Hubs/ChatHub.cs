@@ -1,31 +1,53 @@
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
+using WebSocketsCS.Data;
+using WebSocketsCS.Entities;
+using WebSocketsCS.Extensions;
 
 namespace WebSocketsCSharp.Hubs;
 
-public class ChatHub : Hub
+public class ChatHub(ChatContext context) : Hub
 {
-    private Dictionary<string, ChatMessage[]> Rooms { get; set; } = [];
+    private readonly ChatContext _context = context;
+
+    public async Task GetMessagesForRoom(string room)
+    {
+        Chat[] chats = await _context.Chats.Where((c) => c.RoomName == room).ToArrayAsync();
+
+        await Clients.Caller.SendAsync("getMessagesForRoom", chats);
+    }
 
     public async Task NewMessage(string username, string message, string room)
     {
+
+        Chat[] chats = await _context.Chats.Where((c) => c.RoomName == room).ToArrayAsync();
+
+        // Create chat if it doesn't exist
+        Chat chat = null;
+
+        if (chats.Length == 0)
+        {
+            chat = new()
+            {
+                RoomName = room
+            };
+
+            await _context.Chats.AddAsync(chat);
+        }
+
+        // Create chatMessage
         ChatMessage newMessage = new()
         {
-            Id = Guid.NewGuid(),
             Username = username,
             Message = message,
-            CreatedAt = DateTimeOffset.Now
+            Chat = chat ?? chats.Where((chat) => chat.RoomName == room).FirstOrDefault()
         };
 
-        if (Rooms.TryGetValue(room, out ChatMessage[] value))
-        {
-            Rooms[room] = [.. value, newMessage];
-        }
-        else
-        {
-            Rooms[room] = [newMessage];
-        }
+        await _context.ChatMessages.AddAsync(newMessage);
 
-        await Clients.All.SendAsync("newMessage", Rooms[room]);
+        await _context.SaveChangesAsync();
+
+        await Clients.All.SendAsync("newMessage", newMessage.MapToDTO());
     }
 
     public async Task AddToGroup(string groupName) =>
@@ -33,11 +55,4 @@ public class ChatHub : Hub
 
     public async Task RemoveFromGroup(string groupName) =>
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
-}
-public class ChatMessage
-{
-    public Guid Id { get; set; }
-    public string Username { get; set; }
-    public string Message { get; set; }
-    public DateTimeOffset CreatedAt { get; set; }
 }
