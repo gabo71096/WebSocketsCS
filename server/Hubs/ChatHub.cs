@@ -12,26 +12,19 @@ public class ChatHub(ChatContext context) : Hub
 
     public async Task GetMessagesForRoom(string room)
     {
-        Chat[] chats = await _context.Chats.Where((c) => c.RoomName == room).ToArrayAsync();
-
-        await Clients.Caller.SendAsync("getMessagesForRoom", chats);
+        Chat[] chats = await _context.Chats.Include((c) => c.ChatMessages).Where((c) => c.RoomName == room).ToArrayAsync();
+        await Clients.Caller.SendAsync("getMessagesForRoom", chats.MapToDTO());
     }
 
     public async Task NewMessage(string username, string message, string room)
     {
-
         Chat[] chats = await _context.Chats.Where((c) => c.RoomName == room).ToArrayAsync();
 
         // Create chat if it doesn't exist
         Chat chat = null;
-
         if (chats.Length == 0)
         {
-            chat = new()
-            {
-                RoomName = room
-            };
-
+            chat = new() { RoomName = room };
             await _context.Chats.AddAsync(chat);
         }
 
@@ -44,9 +37,7 @@ public class ChatHub(ChatContext context) : Hub
         };
 
         await _context.ChatMessages.AddAsync(newMessage);
-
         await _context.SaveChangesAsync();
-
         await Clients.All.SendAsync("newMessage", newMessage.MapToDTO());
     }
 
