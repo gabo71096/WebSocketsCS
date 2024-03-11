@@ -1,26 +1,19 @@
 import { Container, IconButton, InputBase, Paper, ToggleButton, ToggleButtonGroup } from "@mui/material";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import SendIcon from "@mui/icons-material/Send";
-import Room from "./components/Room";
-import { useEffect } from "react";
-import { connStart, connStop, connection, newMessage } from "./utilities/socket";
+import { Room } from "./components/Room";
+import { newMessage } from "./utilities/socket";
+import useChat from "./hooks/useChat";
+import useConnection from "./hooks/useConnection";
 
 export default function App() {
   const [selectedRoom, setSelectedRoom] = useState("Null");
   const [message, setMessage] = useState("");
   const rooms = ["Room 1", "Room 2", "Room 3"];
+  const bottom = useRef<HTMLDivElement>();
 
-  useEffect(() => {
-    connStart();
-
-    connection.on("newMessage", (data) => console.log(data));
-
-    return () => {
-      connStop();
-
-      connection.off("newMessage");
-    };
-  }, []);
+  useConnection();
+  const { messages } = useChat(selectedRoom, bottom.current);
 
   return (
     <Container className="flex flex-col" maxWidth={"sm"}>
@@ -37,7 +30,11 @@ export default function App() {
         ))}
       </ToggleButtonGroup>
       <Paper className="p-4" variant="outlined">
-        {selectedRoom === "Null" ? <p className="mb-4">Select a room</p> : <Room selectedRoom={selectedRoom} />}
+        {selectedRoom === "Null" ? (
+          <p className="mb-4">Select a room</p>
+        ) : (
+          <Room messages={messages} ref={bottom} selectedRoom={selectedRoom} />
+        )}
         <Paper
           className="flex px-4 py-1"
           component={"form"}
