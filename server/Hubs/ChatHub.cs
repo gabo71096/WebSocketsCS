@@ -13,7 +13,10 @@ public class ChatHub(ChatContext context) : Hub
     public async Task GetMessagesForRoom(string room)
     {
         Chat[] chats = await _context.Chats.Include((c) => c.ChatMessages).Where((c) => c.RoomName == room).ToArrayAsync();
-        await Clients.Caller.SendAsync("getMessagesForRoom", chats.MapToDTO());
+
+        if (chats.Length == 0) { return; }
+
+        await Clients.Caller.SendAsync("getMessagesForRoom", chats.FirstOrDefault().MapToDTO());
     }
 
     public async Task NewMessage(string username, string message, string room)
