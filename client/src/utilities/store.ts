@@ -22,3 +22,23 @@ export const useLoadingStore = create<LoadingStore>()((set) => ({
   loading: false,
   setLoading: (data) => set({ loading: data }),
 }));
+
+interface UserStore {
+  username: string;
+  setUsername: (value: string) => void;
+}
+
+export const useUserStore = create<UserStore>()((set) => ({
+  username: "",
+  setUsername: (data) => set({ username: data }),
+}));
+
+interface RoomStore {
+  selectedRoom: string;
+  setSelectedRoom: (value: string) => void;
+}
+
+export const useRoomStore = create<RoomStore>()((set) => ({
+  selectedRoom: "",
+  setSelectedRoom: (data) => set({ selectedRoom: data }),
+}));
