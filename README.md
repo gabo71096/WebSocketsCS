@@ -6,7 +6,7 @@ Also I wanted to upskill myself on .NET (C#), because it's the framework we use 
 
 I do mainly frontend, but I intend to get my hands on the backend also, so I needed this to feel more confident.
 
-I always wanted to learn about this, and was too afraid to even begin, but anyway, I finally gave it a go, because I found a great use case in my job where I should implement this.
+I always wanted to learn about WebSockets, and was too afraid to even begin, but anyway, I finally gave it a go, because I found a great use case in my job where I should implement this.
 
 So now if you also want to learn about this, you can take a look at the code and learn about my implementation.
 
