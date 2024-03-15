@@ -11,7 +11,7 @@ export default function Chat() {
   const [message, setMessage] = useState("");
   const { selectedRoom, setSelectedRoom } = useRoomStore();
   const { username, setUsername } = useUserStore();
-  const { messages } = useChat(selectedRoom, bottom.current);
+  const { messages, setMessages } = useMessageStore();
 
   return (
     <Paper className="p-4" variant="outlined">
@@ -38,10 +38,22 @@ export default function Chat() {
         </IconButton>
       </Paper>
       <Box className="flex gap-2">
-        <Button onClick={() => setSelectedRoom("")} variant="outlined">
+        <Button
+          onClick={() => {
+            setSelectedRoom("");
+            setMessages([]);
+          }}
+          variant="outlined"
+        >
           Change Room
         </Button>
-        <Button onClick={() => setUsername("")} variant="outlined">
+        <Button
+          onClick={() => {
+            setUsername("");
+            setMessages([]);
+          }}
+          variant="outlined"
+        >
           Change Username
         </Button>
       </Box>
