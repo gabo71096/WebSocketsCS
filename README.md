@@ -1,5 +1,7 @@
 # ChatApp (SignalR Demo)
 
+![demo](https://github.com/gabo71096/ChatApp/assets/18217269/cfb0f806-e13c-4b05-97df-b4f863a5baf8)
+
 The idea behind this project is only to understand the basics of SignalR and establish a WebSocket connection to allow real-time communication between the client and the server.
 
 Also I wanted to upskill myself on .NET (C#), because it's the framework we use at my job.
