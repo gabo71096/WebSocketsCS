@@ -2,21 +2,27 @@ import { Box, Button, IconButton, InputBase, Paper, Typography } from "@mui/mate
 import SendIcon from "@mui/icons-material/Send";
 import { Room } from "./Room";
 import { newMessage } from "../utilities/socket";
-import useChat from "../hooks/useChat";
-import { useRef, useState } from "react";
-import { useRoomStore, useUserStore } from "../utilities/store";
+import { useLayoutEffect, useRef, useState } from "react";
+import { useMessageStore, useRoomStore, useUserStore } from "../utilities/store";
+import { scrollToBottom } from "../utilities/utilities";
 
 export default function Chat() {
-  const bottom = useRef<HTMLDivElement>();
+  const bottom = useRef<HTMLDivElement>(null);
   const [message, setMessage] = useState("");
   const { selectedRoom, setSelectedRoom } = useRoomStore();
   const { username, setUsername } = useUserStore();
   const { messages, setMessages } = useMessageStore();
 
+  useLayoutEffect(() => {
+    scrollToBottom(bottom?.current);
+  }, [messages]);
+
   return (
     <Paper className="p-4" variant="outlined">
-      <Typography className="mb-4" variant="h5">{selectedRoom}</Typography>
-      <Room messages={messages} ref={bottom} selectedRoom={selectedRoom} />
+      <Typography className="mb-4" variant="h5">
+        {selectedRoom}
+      </Typography>
+      <Room ref={bottom} selectedRoom={selectedRoom} />
       <Paper
         className="flex mb-4 px-4 py-1"
         component={"form"}
